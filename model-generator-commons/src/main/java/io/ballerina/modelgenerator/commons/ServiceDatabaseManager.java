@@ -19,8 +19,6 @@
 package io.ballerina.modelgenerator.commons;
 
 import io.ballerina.compiler.api.symbols.AnnotationAttachPoint;
-import io.ballerina.projects.Package;
-import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,8 +36,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import static io.ballerina.modelgenerator.commons.CommonUtils.importExists;
-
 /**
  * Manages database operations for retrieving information about external connectors and functions.
  *
@@ -50,8 +46,7 @@ public class ServiceDatabaseManager {
     private static final String INDEX_FILE_NAME = "service-index.sqlite";
     private static final Logger LOGGER = Logger.getLogger(ServiceDatabaseManager.class.getName());
     private final String dbPath;
-    private final String AI = "ai";
-    private final String BALLERINAX = "ballerinax";
+
     private static class Holder {
 
         private static final ServiceDatabaseManager INSTANCE = new ServiceDatabaseManager();
@@ -89,7 +84,7 @@ public class ServiceDatabaseManager {
         dbPath = "jdbc:sqlite:" + tempFile.toString();
     }
 
-    public Optional<FunctionData> getListener(Package currentPackage, String module) {
+    public Optional<FunctionData> getListener(String module) {
         StringBuilder sql = new StringBuilder("SELECT ");
         sql.append("l.listener_id, ");
         sql.append("l.name AS listener_name, ");
@@ -103,14 +98,6 @@ public class ServiceDatabaseManager {
         sql.append("JOIN Package p ON l.package_id = p.package_id ");
         sql.append("WHERE p.name = ? ");
 
-        BLangPackage bLangPackage = PackageUtil.getCompilation(currentPackage).defaultModuleBLangPackage();
-        if (module.equals(AI)) {
-            if (importExists(bLangPackage, BALLERINAX, AI)) {
-                sql.append("AND p.org = 'ballerinax' ");
-            } else {
-                sql.append("AND p.org = 'ballerina' ");
-            }
-        }
         try (Connection conn = DriverManager.getConnection(dbPath);
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             stmt.setString(1, module);

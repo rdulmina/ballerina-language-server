@@ -3,10 +3,9 @@
   "orgName": "ballerina",
   "pkgName": "kafka",
   "moduleName": "kafka",
-  "source": "sample1",
   "response": {
     "listener": {
-      "id": "10",
+      "id": "9",
       "name": "Kafka Listener",
       "type": "kafka",
       "displayName": "Kafka",
