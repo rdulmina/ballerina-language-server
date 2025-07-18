@@ -26,7 +26,6 @@ import com.google.gson.JsonElement;
  * @param filePath    path of the file
  * @param flowNode    diagram node
  * @param toolName    name of the tool
- * @param toolParameters tool function parameters property node
  * @param description description of the tool
  * @param connection  name of the connection
  *                    
