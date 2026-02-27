@@ -47,5 +47,4 @@ public function main() returns error? {
 
     // Send event - should be SEND_EVENT
     check workflow:sendEvent(orderWorkflow, {orderId: "123", approved: true, approverName: "Admin"}, "approve");
-    io:println("Event sent: " + result.toString());
 }

@@ -138,10 +138,12 @@ public class WorkflowBuilder extends FunctionDefinitionBuilder {
                 if (typeModel != null) {
                     // Process the type model with workflow-specific logic
                     String typeName = processTypeModelAndGetTypeName(sourceBuilder, typeModel);
-                    sourceBuilder.token()
-                            .name(typeName)
-                            .whiteSpace()
-                            .name(DEFAULT_INPUT_PARAM_NAME);
+                    if (typeName != null && !typeName.isEmpty()) {
+                        sourceBuilder.token()
+                                .name(typeName)
+                                .whiteSpace()
+                                .name(DEFAULT_INPUT_PARAM_NAME);
+                    }
                 }
             }
         }

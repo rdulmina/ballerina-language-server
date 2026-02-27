@@ -182,13 +182,17 @@ public class WorkflowStartBuilder extends NodeBuilder {
             SemanticModel semanticModel = module.getCompilation().getSemanticModel();
 
             // Find the function symbol matching the workflow function name
-            Optional<Symbol> functionSymbol = semanticModel.moduleSymbols().stream()
+            Optional<Symbol> targetSymbol = semanticModel.moduleSymbols().stream()
                     .filter(symbol -> symbol.kind() == SymbolKind.FUNCTION)
                     .filter(symbol -> symbol.getName().orElse("").equals(codedata.symbol()))
                     .findFirst();
+            if  (targetSymbol.isEmpty()) {
+                return null;
+            }
 
-            if (functionSymbol.isPresent() && functionSymbol.get() instanceof FunctionSymbol funcSymbol) {
-                FunctionTypeSymbol functionType = funcSymbol.typeDescriptor();
+            Symbol sym = targetSymbol.get();
+            if (sym.kind() == SymbolKind.FUNCTION) {
+                FunctionTypeSymbol functionType = ((FunctionSymbol) sym).typeDescriptor();
                 Optional<List<ParameterSymbol>> params = functionType.params();
 
                 if (params.isPresent()) {

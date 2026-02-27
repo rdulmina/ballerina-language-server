@@ -33,6 +33,7 @@ import io.ballerina.compiler.api.symbols.TypeDefinitionSymbol;
 import io.ballerina.compiler.api.symbols.TypeDescKind;
 import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeSymbol;
+import io.ballerina.flowmodelgenerator.core.utils.TypeUtils;
 import io.ballerina.flowmodelgenerator.core.utils.WorkflowUtil;
 import io.ballerina.flowmodelgenerator.extension.request.GetAllEventsRequest;
 import io.ballerina.flowmodelgenerator.extension.response.GetAllEventsResponse;
@@ -52,6 +53,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import static io.ballerina.flowmodelgenerator.core.Constants.Workflow.ANYDATA;
 import static io.ballerina.flowmodelgenerator.core.Constants.Workflow.EVENTS_SUFFIX;
 
 /**
@@ -185,10 +187,11 @@ public class WorkflowManagerService implements ExtendedLanguageServerService {
         for (Map.Entry<String, RecordFieldSymbol> entry : fields.entrySet()) {
             String fieldName = entry.getKey();
             RecordFieldSymbol fieldSymbol = entry.getValue();
-            TypeSymbol fieldType = fieldSymbol.typeDescriptor();
-
-            // Extract the type from future<T>
-            String eventDataType = extractTypeFromFuture(fieldType);
+            TypeSymbol fieldType = TypeUtils.resolveTypeReference(fieldSymbol.typeDescriptor());
+            if (fieldType.typeKind() != TypeDescKind.FUTURE) {
+                continue;
+            }
+            String eventDataType = extractTypeNameFromFuture((FutureTypeSymbol) fieldType);
 
             JsonObject eventObj = new JsonObject();
             eventObj.addProperty("name", fieldName);
@@ -199,13 +202,7 @@ public class WorkflowManagerService implements ExtendedLanguageServerService {
         return events;
     }
 
-    /**
-     * Extracts the inner type from a future<T> type.
-     *
-     * @param typeSymbol The future type symbol
-     * @return The inner type name, or the original type signature if not a future
-     */
-    private String extractTypeFromFuture(TypeSymbol typeSymbol) {
-        return ((FutureTypeSymbol) typeSymbol).typeParameter().get().getName().get();
+    private String extractTypeNameFromFuture(FutureTypeSymbol typeSymbol) {
+        return typeSymbol.typeParameter().flatMap(TypeSymbol::getName).orElse(ANYDATA);
     }
 }

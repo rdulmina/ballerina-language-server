@@ -379,24 +379,16 @@ public class WaitEventBuilder extends WaitBuilder {
         }
 
         // Check that it's a RecordTypeSymbol and all fields are future types
-        if (typeSymbol instanceof RecordTypeSymbol recordType) {
+        Map<String, RecordFieldSymbol> fields = ((RecordTypeSymbol) typeSymbol).fieldDescriptors();
+        if (fields.isEmpty()) {
+            // Empty record is not a valid events record
+            return false;
+        }
 
-            // Get all record fields and validate each is a future type
-            java.util.Map<String, io.ballerina.compiler.api.symbols.RecordFieldSymbol> fields =
-                    recordType.fieldDescriptors();
-
-            if (fields.isEmpty()) {
-                // Empty record is not a valid events record
+        for (RecordFieldSymbol field : fields.values()) {
+            TypeSymbol fieldType = TypeUtils.resolveTypeReference(field.typeDescriptor());
+            if (fieldType.typeKind() != TypeDescKind.FUTURE) {
                 return false;
-            }
-
-            for (io.ballerina.compiler.api.symbols.RecordFieldSymbol field : fields.values()) {
-                TypeSymbol fieldType = TypeUtils.resolveTypeReference(field.typeDescriptor());
-
-                // Each field must be a future type
-                if (fieldType.typeKind() != TypeDescKind.FUTURE) {
-                    return false;
-                }
             }
         }
 
