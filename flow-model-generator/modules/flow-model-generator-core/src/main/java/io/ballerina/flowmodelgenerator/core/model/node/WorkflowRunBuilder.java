@@ -189,7 +189,7 @@ public class WorkflowRunBuilder extends NodeBuilder {
             return null;
         }
 
-        Symbol sym = targetSymbol.get();
+            Symbol sym = targetSymbol.get();
         if (sym.kind() == SymbolKind.FUNCTION) {
             FunctionTypeSymbol functionType = ((FunctionSymbol) sym).typeDescriptor();
             Optional<List<ParameterSymbol>> params = functionType.params();

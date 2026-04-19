@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static io.ballerina.flowmodelgenerator.core.Constants.Workflow.ANYDATA;
+import static io.ballerina.flowmodelgenerator.core.Constants.Workflow.ANYDATA;
 import static io.ballerina.flowmodelgenerator.core.Constants.Workflow.DATA_SUFFIX;
 
 /**
